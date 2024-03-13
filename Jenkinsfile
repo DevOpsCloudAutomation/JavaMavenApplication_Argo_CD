@@ -78,7 +78,7 @@ pipeline
             }
         }
         
-        stage("Trigger Continuous Delivery Argo CD Pipeline")
+        stage("Trigger Continuous Delivery ArgoCD Pipeline")
         {
             steps()
             {

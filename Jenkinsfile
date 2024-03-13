@@ -76,26 +76,6 @@ pipeline
                 sh 'docker rmi -f 236536187964.dkr.ecr.ap-south-1.amazonaws.com/webapplication-argocd:${buildNumber}'
             }
         }
-
-        stage('Update Docker Image Tag in Kubernetes Manifest')
-        {
-            steps()
-            {
-                sh "sed -i 's/Build_Tag/${Build_Number}/g' Deployment.yaml"
-            }
-        }
-
-        stage('Deploy Application to EKS Kubernetes Cluster')
-        {
-            steps()
-            {
-                sh 'kubectl delete deployment webpage-deployment -n test || true'
-                sh 'kubectl apply -f Deployment.yaml'
-                
-                sh 'helm uninstall helmwebapplication -n development || true'
-                sh 'helm install helmwebapplication helmwebapplication -n development'
-            }
-        }
     }
     
     post
@@ -103,20 +83,6 @@ pipeline
         always
         {
             cleanWs()
-        }
-        
-        success
-        {
-            slackSend channel: 'awsdevopscloudautomation',
-            color: 'good',
-            message: "${currentBuild.currentResult} ✅\n Job Name: ${env.JOB_NAME} || Build Number: ${env.BUILD_NUMBER}\n Application is Successfully Deployed to Production Environment\n More Information Available at: ${env.BUILD_URL}"
-        }
-        
-        failure
-        {
-            slackSend channel: 'awsdevopscloudautomation',
-            color: 'good',
-            message: "${currentBuild.currentResult} ⛔️\n Job Name: ${env.JOB_NAME} || Build Number: ${env.BUILD_NUMBER}\n Application Deployment is Failed to Production Environment\n More Information Available at: ${env.BUILD_URL}"
         }
     }
 }

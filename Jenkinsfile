@@ -76,6 +76,14 @@ pipeline
                 sh 'docker rmi -f 236536187964.dkr.ecr.ap-south-1.amazonaws.com/webapplication-argocd:${buildNumber}'
             }
         }
+        
+        stage("Trigger Continuous Delivery Pipeline")
+        {
+            steps()
+            {
+                sh "curl -v -k --user DevOpsCloudAutomation:${JENKINS_API_TOKEN} -X POST -H 'cache-control: no-cache' -H 'content-type: application/x-www-form-urlencoded' --data 'IMAGE_TAG=${IMAGE_TAG}' 'ec2-15-207-114-187.ap-south-1.compute.amazonaws.com:8080/job/CD_Pipeline/buildWithParameters?token=GitOps_ArgoCD'"
+            }
+        }
     }
     
     post

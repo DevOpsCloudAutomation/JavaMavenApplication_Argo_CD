@@ -9,7 +9,8 @@ pipeline
 
     environment
     {
-        buildNumber = "${BUILD_NUMBER}"
+        Image_Tag = "${BUILD_NUMBER}"
+        Jenkins_API_Token_ArgoCD = credentials("Jenkins_API_Token_ArgoCD")
     }
 
     stages
@@ -56,7 +57,7 @@ pipeline
         {
             steps()
             {
-                sh 'docker build -t 236536187964.dkr.ecr.ap-south-1.amazonaws.com/webapplication-argocd:${buildNumber} .'
+                sh 'docker build -t 236536187964.dkr.ecr.ap-south-1.amazonaws.com/webapplication-argocd:${Image_Tag} .'
             }
         }
 
@@ -65,7 +66,7 @@ pipeline
             steps()
             {
                 sh "aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 236536187964.dkr.ecr.ap-south-1.amazonaws.com"
-                sh "docker push 236536187964.dkr.ecr.ap-south-1.amazonaws.com/webapplication-argocd:${buildNumber}"
+                sh "docker push 236536187964.dkr.ecr.ap-south-1.amazonaws.com/webapplication-argocd:${Image_Tag}"
             }
         }
 
@@ -73,15 +74,15 @@ pipeline
         {
             steps()
             {
-                sh 'docker rmi -f 236536187964.dkr.ecr.ap-south-1.amazonaws.com/webapplication-argocd:${buildNumber}'
+                sh 'docker rmi -f 236536187964.dkr.ecr.ap-south-1.amazonaws.com/webapplication-argocd:${Image_Tag}'
             }
         }
         
-        stage("Trigger Continuous Delivery Pipeline - Argo CD")
+        stage("Trigger Continuous Delivery Pipeline - ArgoCD")
         {
             steps()
             {
-                sh "curl -v -k --user DevOpsCloudAutomation:${JENKINS_API_TOKEN} -X POST -H 'cache-control: no-cache' -H 'content-type: application/x-www-form-urlencoded' --data 'IMAGE_TAG=${IMAGE_TAG}' 'ec2-15-207-114-187.ap-south-1.compute.amazonaws.com:8080/job/CD_Pipeline/buildWithParameters?token=GitOps_ArgoCD'"
+                sh "curl -v -k --user DevOpsCloudAutomation:${Jenkins_API_Token_ArgoCD} -X POST -H 'cache-control: no-cache' -H 'content-type: application/x-www-form-urlencoded' --data 'Image_Tag=${Image_Tag}' 'ec2-15-207-114-187.ap-south-1.compute.amazonaws.com:8080/job/CD_Pipeline/buildWithParameters?token=GitOps_ArgoCD'"
             }
         }
     }

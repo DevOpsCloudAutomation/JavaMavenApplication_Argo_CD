@@ -14,7 +14,7 @@
 - Remove Docker Image Locally in Jenkins.
 - Trigger Continuous Delivery Pipeline - ArgoCD.
 
-### Tools and Technologies used are Java, Git, GitHub, Maven, SonarQube, Jenkins, Docker, DockerHub and Kubernetes.
+### Tools and Technologies used are Java, Git, GitHub, Maven, SonarQube, Jenkins, Docker, AWS ECR Registry and Kubernetes.
 
 ![CICD](https://github.com/DevOpsCloudAutomation/TestRepository/assets/123757746/060971a4-f730-4fbf-8657-4682af93c896)
   

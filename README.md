@@ -1,9 +1,9 @@
 
-# End to End CICD Pipeline Project
+# End to End CI Pipeline Project for GitOps ArgoCD
 
-## This Project can be used to Build an End to End CICD Pipeline.
+## This Project can be used to Build an End to End CI Pipeline for GitOps ArgoCD
 
-## CICD Pipeline Stages
+## CI Pipeline Stages
 
 - Checkout Code from GitHub.
 - Build Project.
@@ -12,18 +12,16 @@
 - Build Docker Image.
 - Push Docker Image to AWS ECR Registry.
 - Remove Docker Image Locally in Jenkins.
-- Update Docker Image Tag in Kubernetes Manifest.
-- Deploy Application into Kubernetes Cluster.
-- Send CICD Pipeline Execution Status to Slack.
+- Trigger Continuous Delivery Pipeline - ArgoCD.
 
 ### Tools and Technologies used are Java, Git, GitHub, Maven, SonarQube, Jenkins, Docker, DockerHub and Kubernetes.
 
-![CICD](https://github.com/DevOpsCloudAutomation/Java_Docker/assets/123757746/085ef572-bd9d-4d05-b710-4fc2a0646d39)
+![CICD](https://github.com/DevOpsCloudAutomation/TestRepository/assets/123757746/060971a4-f730-4fbf-8657-4682af93c896)
   
 # Project Execution
 ## Git Checkout
 ```bash
-  git branch: 'main', url: 'https://github.com/DevOpsCloudAutomation/JavaMavenApplication_AWS_ECR.git'
+  git branch: 'main', url: 'https://github.com/DevOpsCloudAutomation/JavaMavenApplication_Argo_CD.git'
 ```
 
 ## Build Project
@@ -48,30 +46,21 @@ Java and Maven should be installed as a prerequisite to Build Project Code.
 
 ## Build Docker Image
 ```bash
-  docker build -t 236536187964.dkr.ecr.ap-south-1.amazonaws.com/webapplication:${buildNumber} .
+  docker build -t 236536187964.dkr.ecr.ap-south-1.amazonaws.com/webapplication-argocd:${buildNumber} .
 ```
 
 ## Push Docker Image to AWS ECR Registry
 ```bash
   aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 236536187964.dkr.ecr.ap-south-1.amazonaws.com
-  docker push 236536187964.dkr.ecr.ap-south-1.amazonaws.com/webapplication:${buildNumber}
+  docker push 236536187964.dkr.ecr.ap-south-1.amazonaws.com/webapplication-argocd:${buildNumber}
 ```
 
 ## Remove Docker Image Locally in Jenkins Server
 ```bash
-  docker rmi -f 236536187964.dkr.ecr.ap-south-1.amazonaws.com/webapplication:${buildNumber}
+  docker rmi -f 236536187964.dkr.ecr.ap-south-1.amazonaws.com/webapplication-argocd:${buildNumber}
 ```
 
-## Update Docker Image Tag in Kubernetes Manifest
+## Trigger Continuous Delivery Pipeline - ArgoCD
 ```bash
-  sed -i 's/Build_Tag/${Build_Number}/g' Deployment.yaml
+  curl -v -k --user DevOpsCloudAutomation:${Jenkins_API_Token_ArgoCD} -X POST -H 'cache-control: no-cache' -H 'content-type: application/x-www-form-urlencoded' --data 'buildNumber=${buildNumber}' 'ec2-15-207-114-187.ap-south-1.compute.amazonaws.com:8080/job/CD_Pipeline/buildWithParameters?token=GitOps_ArgoCD'
 ```
-
-## Deploy Application to Kubernetes Cluster
-```bash
-  kubectl apply -f Deployment.yaml
-
-  helm install helmwebapplication helmwebapplication -n development
-```
-Note:  
-Application can be deployed to Kubernetes Cluster using Kubernetes Manifest Files as well as Helm Chart.
